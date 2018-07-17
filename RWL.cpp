@@ -11,7 +11,7 @@ void RWL::start_read()
 		std::cout << "Enter function start read " << std::this_thread::get_id() << std::endl;
 	}
 
-	std::unique_lock<std::mutex> u_lock(writer_mutex_);
+	std::unique_lock<std::mutex> u_lock(mutex_);
 	reader_cv_.wait(u_lock, [this]() { return writer_count_ == 0 && !is_writer_active_; });
 	u_lock.unlock();
 
@@ -20,7 +20,7 @@ void RWL::start_read()
 		std::cout << "START READ " << std::this_thread::get_id() << std::endl;
 	}
 
-	std::lock_guard<std::mutex> l_guard(reader_mutex_);
+	std::lock_guard<std::mutex> l_guard(mutex_);
 	++reader_count_;
 }
 
@@ -32,7 +32,7 @@ void RWL::stop_read()
 	}
 
 	{
-		std::lock_guard<std::mutex> l_guard(reader_mutex_);
+		std::lock_guard<std::mutex> l_guard(mutex_);
 		reader_count_--;
 	}
 
@@ -51,7 +51,7 @@ void RWL::start_write()
 		std::cout << "Enter function start write " << std::this_thread::get_id() << std::endl;
 	}
 
-	std::unique_lock<std::mutex> u_lock(writer_mutex_);
+	std::unique_lock<std::mutex> u_lock(mutex_);
 	++writer_count_;
 	writer_cv_.wait(u_lock, [this]() { return reader_count_ == 0 && !is_writer_active_; });
 	u_lock.unlock();
@@ -61,7 +61,7 @@ void RWL::start_write()
 		std::cout << "START WRITE " << std::this_thread::get_id() << std::endl;
 	}
 
-	writer_mutex_.lock();
+	mutex_.lock();
 	is_writer_active_ = true;
 	--writer_count_;
 }
@@ -74,7 +74,7 @@ void RWL::stop_write()
 	}
 
 	is_writer_active_ = false;
-	writer_mutex_.unlock();
+	mutex_.unlock();
 
 	if (writer_count_ != 0)
 	{

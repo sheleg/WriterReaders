@@ -1,13 +1,11 @@
 #pragma once
-#include "log_helper.h"
 #include <iostream>
 #include <mutex>
 
 class RWL
 {
 private:
-	std::mutex reader_mutex_;
-	std::mutex writer_mutex_;
+	std::mutex mutex_;
 
 	std::condition_variable reader_cv_;
 	std::condition_variable writer_cv_;

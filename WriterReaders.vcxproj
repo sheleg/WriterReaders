@@ -123,7 +123,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="log_helper.cpp" />
     <ClCompile Include="RWL.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
@@ -131,7 +130,6 @@
     <Text Include="data.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="log_helper.h" />
     <ClInclude Include="RWL.h" />
     <ClInclude Include="RWLData.h" />
   </ItemGroup>
