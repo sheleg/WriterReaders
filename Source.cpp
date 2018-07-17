@@ -1,19 +1,37 @@
 #pragma once
-#include "reader.h"
-#include "writer.h"
-#include <fstream>
+#include "RWL.h"
+#include <thread>
+
+RWL rwl;
+
+void write()
+{
+	rwl.start_write();
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+	rwl.stop_write();
+}
+
+void read()
+{
+	rwl.start_read();
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+	rwl.stop_read();
+}
 
 int main()
 {
-	std::ofstream fout("data.txt");
-	writer<std::ofstream> writer_ (fout);
-	writer_.write("HELLO\n");
-	fout.close();
+	std::thread r1(read);
+	std::thread r2(read);
+	std::thread w1(write);
+	std::thread r3(read);
+	std::thread r4(read);
+	std::thread w2(write);
 
-	std::ifstream fin("data.txt");
-	reader<std::ifstream> reader_(fin);
-	std::cout << reader_.read();
-	fin.close();
-
+	r1.join();
+	r2.join();
+	w1.join();
+	r3.join();
+	r4.join();
+	w2.join();
 	return 0;
 }
