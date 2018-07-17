@@ -13,15 +13,12 @@ void RWL::start_read()
 
 	std::unique_lock<std::mutex> u_lock(mutex_);
 	reader_cv_.wait(u_lock, [this]() { return writer_count_ == 0 && !is_writer_active_; });
-	u_lock.unlock();
+		++reader_count_;
 
 	{
 		std::lock_guard<std::mutex> l_guard(cout_mutex);
 		std::cout << "START READ " << std::this_thread::get_id() << std::endl;
 	}
-
-	std::lock_guard<std::mutex> l_guard(mutex_);
-	++reader_count_;
 }
 
 void RWL::stop_read()
